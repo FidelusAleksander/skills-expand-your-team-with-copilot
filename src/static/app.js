@@ -472,6 +472,30 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Function to share activity on social media
+  function shareActivity(platform, activityName, activityDescription, schedule) {
+    const pageUrl = window.location.href;
+    const shareText = `Check out ${activityName} at Mergington High School! ${activityDescription} - ${schedule}`;
+    
+    let shareUrl = '';
+    
+    switch(platform) {
+      case 'twitter':
+        shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(pageUrl)}`;
+        break;
+      case 'facebook':
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}&quote=${encodeURIComponent(shareText)}`;
+        break;
+      case 'email':
+        shareUrl = `mailto:?subject=${encodeURIComponent('Check out this activity!')}&body=${encodeURIComponent(shareText + '\n\n' + pageUrl)}`;
+        break;
+    }
+    
+    if (shareUrl) {
+      window.open(shareUrl, '_blank', 'width=600,height=400');
+    }
+  }
+
   // Function to render a single activity card
   function renderActivityCard(name, details) {
     const activityCard = document.createElement("div");
@@ -519,6 +543,28 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
+    // Create social sharing buttons
+    const socialShareButtons = `
+      <div class="social-share-container">
+        <span class="share-label">Share:</span>
+        <button class="share-btn twitter-share" data-activity="${name}" title="Share on Twitter">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </button>
+        <button class="share-btn facebook-share" data-activity="${name}" title="Share on Facebook">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+        </button>
+        <button class="share-btn email-share" data-activity="${name}" title="Share via Email">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+          </svg>
+        </button>
+      </div>
+    `;
+
     activityCard.innerHTML = `
       ${tagHtml}
       <h4>${name}</h4>
@@ -528,6 +574,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="tooltip-text">Regular meetings at this time throughout the semester</span>
       </p>
       ${capacityIndicator}
+      ${socialShareButtons}
       <div class="participants-list">
         <h5>Current Participants:</h5>
         <ul>
@@ -585,6 +632,32 @@ document.addEventListener("DOMContentLoaded", () => {
           openRegistrationModal(name);
         });
       }
+    }
+
+    // Add click handlers for social share buttons
+    const twitterBtn = activityCard.querySelector(".twitter-share");
+    const facebookBtn = activityCard.querySelector(".facebook-share");
+    const emailBtn = activityCard.querySelector(".email-share");
+    
+    if (twitterBtn) {
+      twitterBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        shareActivity('twitter', name, details.description, formattedSchedule);
+      });
+    }
+    
+    if (facebookBtn) {
+      facebookBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        shareActivity('facebook', name, details.description, formattedSchedule);
+      });
+    }
+    
+    if (emailBtn) {
+      emailBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        shareActivity('email', name, details.description, formattedSchedule);
+      });
     }
 
     activitiesList.appendChild(activityCard);
