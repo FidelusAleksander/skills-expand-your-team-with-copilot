@@ -28,6 +28,7 @@ app.mount("/static", StaticFiles(directory=os.path.join(current_dir, "static")),
 # Root endpoint to redirect to static index.html
 @app.get("/")
 def root():
+    """Redirect root URL to the static index.html page."""
     return RedirectResponse(url="/static/index.html")
 
 # Include routers
